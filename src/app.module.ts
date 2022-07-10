@@ -4,9 +4,10 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { ormConfigOptions } from './common/configs/orm.config';
+import { UsersModule } from './users/users.module';
 
 @Module({
-  imports: [TypeOrmModule.forRootAsync(ormConfigOptions), AuthModule],
+  imports: [TypeOrmModule.forRootAsync(ormConfigOptions), AuthModule, UsersModule],
   controllers: [AppController],
   providers: [AppService],
 })
