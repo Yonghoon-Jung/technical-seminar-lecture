@@ -9,6 +9,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { TokenPayload } from './interfaces/token-payload.interface';
 import { FilteredUser } from './interfaces/filtered-user.interface';
+import { SignDownDto } from './dto/sign-down.dto';
 
 @Injectable()
 export class AuthService {
@@ -39,6 +40,28 @@ export class AuthService {
   }
 
   async signIn({ email, password }: SignInDto): Promise<FilteredUser> {
+    const user: FilteredUser = await this.confirmWithEmailAndPassword(
+      email,
+      password,
+    );
+
+    return user;
+  }
+
+  async signDown({ email }: User, { password }: SignDownDto) {
+    const user: FilteredUser = await this.confirmWithEmailAndPassword(
+      email,
+      password,
+    );
+    const softDeletedResult = await this.usersRepository.softDeleteUser(user);
+
+    return user;
+  }
+
+  async confirmWithEmailAndPassword(
+    email: string,
+    password: string,
+  ): Promise<FilteredUser> {
     const user: User = await this.usersRepository.getByEmail(email);
 
     if (!user) {
@@ -55,8 +78,8 @@ export class AuthService {
     return filteredUser;
   }
 
-  getCookieWithJwtToken(email: string): string {
-    const payload: TokenPayload = { email };
+  getCookieWithJwtToken(user: FilteredUser): string {
+    const payload: TokenPayload = user;
     const token = this.jwtService.sign(payload);
 
     return token;

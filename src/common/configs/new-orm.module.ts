@@ -3,7 +3,7 @@ import { getDataSourceToken } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { TYPEORM_EX_CUSTOM_REPOSITORY } from '../decorators/custom-repository.decorator';
 
-export class TypeOrmExModule {
+export class NewTypeOrmModule {
   public static forFeature<T extends new (...args: any[]) => any>(
     repositories: T[],
   ): DynamicModule {
@@ -35,7 +35,7 @@ export class TypeOrmExModule {
 
     return {
       exports: providers,
-      module: TypeOrmExModule,
+      module: NewTypeOrmModule,
       providers,
     };
   }
