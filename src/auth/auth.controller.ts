@@ -1,13 +1,5 @@
-import {
-  Body,
-  Controller,
-  Get,
-  HttpCode,
-  Post,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, HttpCode, Post } from '@nestjs/common';
 import { HTTP_STATUS_CODE } from 'src/common/configs/status.config';
-import { LocalAuthenticationGuard } from 'src/common/guards/localAuthentication.guard';
 import { AuthService } from './auth.service';
 import { SignInDto } from './dto/sign-in.dto';
 import { SignUpDto } from './dto/sign-up.dto';
@@ -25,13 +17,12 @@ export class AuthController {
     return response;
   }
 
-  @UseGuards(LocalAuthenticationGuard)
   @HttpCode(HTTP_STATUS_CODE.success.ok)
   @Post('sign-in')
   async signIn(@Body() signInDto: SignInDto) {
     const user: FilteredUser = await this.authService.signIn(signInDto);
-    const response = this.authService.getCookieWithJwtToken(user.email);
+    const response: string = this.authService.getCookieWithJwtToken(user.email);
 
-    return response;
+    return { response };
   }
 }

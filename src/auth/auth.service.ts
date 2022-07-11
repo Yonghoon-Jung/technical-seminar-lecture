@@ -22,6 +22,14 @@ export class AuthService {
 
   async signUp(signUpDto: SignUpDto) {
     const { password, ...userInfo }: SignUpDto = signUpDto;
+    const isEmailMatching = await this.usersRepository.getByEmail(
+      userInfo.email,
+    );
+
+    if (!!isEmailMatching) {
+      throw new BadRequestException('이미 존재하는 이메일입니다.');
+    }
+
     const hashedPassword: string = await bcrypt.hash(password, 10);
     userInfo['salt'] = hashedPassword;
 
@@ -47,12 +55,10 @@ export class AuthService {
     return filteredUser;
   }
 
-  getCookieWithJwtToken(email: string) {
+  getCookieWithJwtToken(email: string): string {
     const payload: TokenPayload = { email };
     const token = this.jwtService.sign(payload);
 
-    return `Authentication=${token}; HttpOnly; Path=/; Max-Age=${this.configService.get(
-      'JWT_EXPIRESIN',
-    )}`;
+    return token;
   }
 }
