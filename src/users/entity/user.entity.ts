@@ -1,10 +1,4 @@
-import {
-  IsEmail,
-  IsNotEmpty,
-  IsString,
-  MaxLength,
-  MinLength,
-} from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, IsUUID, Length } from 'class-validator';
 import {
   BaseEntity,
   Column,
@@ -17,14 +11,14 @@ import {
 
 @Entity('users')
 export class User extends BaseEntity {
+  @IsUUID()
   @PrimaryGeneratedColumn('uuid')
-  id: number;
+  id: string;
 
   @IsNotEmpty({ message: '이메일을 입력해 주세요.' })
   @IsString()
   @IsEmail()
-  @MinLength(7)
-  @MaxLength(20)
+  @Length(7, 20)
   @Column({
     type: 'varchar',
     comment: '이메일',

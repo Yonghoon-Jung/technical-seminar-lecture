@@ -1,6 +1,14 @@
-import { Body, Controller, HttpCode, Patch, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { HTTP_STATUS_CODE } from 'src/common/configs/status.config';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
+import JwtAuthenticationGuard from 'src/common/guards/jwt-authentication.guard';
 import { User } from 'src/users/entity/user.entity';
 import { AuthService } from './auth.service';
 import { SignDownDto } from './dto/sign-down.dto';
@@ -14,10 +22,10 @@ export class AuthController {
 
   @HttpCode(HTTP_STATUS_CODE.success.created)
   @Post('sign-up')
-  signUp(@Body() signUpDto: SignUpDto) {
-    const response = this.authService.signUp(signUpDto);
+  async signUp(@Body() signUpDto: SignUpDto) {
+    const response = await this.authService.signUp(signUpDto);
 
-    return response;
+    return { response };
   }
 
   @HttpCode(HTTP_STATUS_CODE.success.ok)
@@ -36,14 +44,13 @@ export class AuthController {
   //   return '';
   // }
 
-  @HttpCode(HTTP_STATUS_CODE.success.ok)
+  @UseGuards(JwtAuthenticationGuard)
+  @HttpCode(HTTP_STATUS_CODE.success.noContent)
   @Post('sign-down')
   async signDown(
     @CurrentUser() loginUser: User,
     @Body() signDownDto: SignDownDto,
   ) {
-    const response = await this.authService.signDown(loginUser, signDownDto);
-
-    return { response };
+    await this.authService.signDown(loginUser, signDownDto);
   }
 }

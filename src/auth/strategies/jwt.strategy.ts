@@ -1,6 +1,6 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { UsersRepository } from 'src/users/repository/users.repository';
 import { TokenPayload } from '../interfaces/token-payload.interface';
@@ -18,6 +18,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: TokenPayload) {
-    return this.usersRepository.getByEmail(payload.email);
+    const { salt, ...user } = await this.usersRepository.getByEmail(
+      payload.email,
+    );
+
+    if (!user) {
+      throw new UnauthorizedException('정보 불일치');
+    }
+
+    return user;
   }
 }

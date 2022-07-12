@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadGatewayException,
+  BadRequestException,
+  Injectable,
+} from '@nestjs/common';
 import { UsersRepository } from 'src/users/repository/users.repository';
 import * as bcrypt from 'bcrypt';
 import { SignUpDto } from './dto/sign-up.dto';
@@ -21,9 +25,9 @@ export class AuthService {
     private readonly configService: ConfigService,
   ) {}
 
-  async signUp(signUpDto: SignUpDto) {
+  async signUp(signUpDto: SignUpDto): Promise<void> {
     const { password, ...userInfo }: SignUpDto = signUpDto;
-    const isEmailMatching = await this.usersRepository.getByEmail(
+    const isEmailMatching = await this.usersRepository.getByEmailOrDeletedEmail(
       userInfo.email,
     );
 
@@ -32,11 +36,14 @@ export class AuthService {
     }
 
     const hashedPassword: string = await bcrypt.hash(password, 10);
+
     userInfo['salt'] = hashedPassword;
 
-    const signUpResult = await this.usersRepository.createUser(userInfo);
+    const isCreatingUser = await this.usersRepository.createUser(userInfo);
 
-    return signUpResult;
+    if (!isCreatingUser) {
+      throw new BadGatewayException('회원가입 실패');
+    }
   }
 
   async signIn({ email, password }: SignInDto): Promise<FilteredUser> {
@@ -48,14 +55,19 @@ export class AuthService {
     return user;
   }
 
-  async signDown({ email }: User, { password }: SignDownDto) {
+  async signDown({ email }: User, { password }: SignDownDto): Promise<void> {
     const user: FilteredUser = await this.confirmWithEmailAndPassword(
       email,
       password,
     );
-    const softDeletedResult = await this.usersRepository.softDeleteUser(user);
 
-    return user;
+    const isDeletingResult: boolean = await this.usersRepository.softDeleteUser(
+      user,
+    );
+
+    if (!isDeletingResult) {
+      throw new BadGatewayException('유저 탈퇴 실패');
+    }
   }
 
   async confirmWithEmailAndPassword(
@@ -80,7 +92,7 @@ export class AuthService {
 
   getCookieWithJwtToken(user: FilteredUser): string {
     const payload: TokenPayload = user;
-    const token = this.jwtService.sign(payload);
+    const token: string = this.jwtService.sign(payload);
 
     return token;
   }

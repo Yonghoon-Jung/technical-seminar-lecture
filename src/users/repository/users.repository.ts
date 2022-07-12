@@ -1,37 +1,68 @@
+import { InternalServerErrorException } from '@nestjs/common';
+import { ResultSetHeader } from 'mysql2';
 import { FilteredUser } from 'src/auth/interfaces/filtered-user.interface';
 import { CustomRepository } from 'src/common/decorators/custom-repository.decorator';
-import { Repository } from 'typeorm';
+import { DeleteResult, InsertResult, Repository } from 'typeorm';
 import { User } from '../entity/user.entity';
 
 @CustomRepository(User)
 export class UsersRepository extends Repository<User> {
-  async createUser(userInfo) {
-    const createdResult = await this.createQueryBuilder('users')
-      .insert()
-      .into(User)
-      .values([userInfo])
-      .execute();
+  async createUser(userInfo: any): Promise<boolean> {
+    try {
+      const { raw }: InsertResult = await this.createQueryBuilder('users')
+        .insert()
+        .into(User)
+        .values([userInfo])
+        .execute();
+      const { affectedRows }: ResultSetHeader = raw;
 
-    return createdResult;
+      return !!affectedRows;
+    } catch (err) {
+      throw new InternalServerErrorException('서버에러 - 회원가입');
+    }
   }
 
-  async softDeleteUser({ email }: FilteredUser) {
-    const softDeletedResult = await this.createQueryBuilder()
-      .softDelete()
-      .from(User)
-      .where('email = :email', { email })
-      .execute();
+  async softDeleteUser({ id }: FilteredUser) {
+    try {
+      const { affected }: DeleteResult = await this.createQueryBuilder()
+        .softDelete()
+        .from(User)
+        .where('id = :id', { id })
+        .execute();
 
-    return softDeletedResult;
+      return !!affected;
+    } catch (err) {
+      throw new InternalServerErrorException('서버에러 - 회원탈퇴');
+    }
   }
 
   async getByEmail(email: string): Promise<User> {
-    const user: User = await this.createQueryBuilder('users')
-      .select(['users.id', 'users.email', 'users.name'])
-      .addSelect('users.salt')
-      .where('users.email = :email', { email })
-      .getOne();
+    try {
+      const user: User = await this.createQueryBuilder('users')
+        .select(['users.id', 'users.email', 'users.name'])
+        .addSelect('users.salt')
+        .where('users.email = :email', { email })
+        .getOne();
 
-    return user;
+      return user;
+    } catch (err) {
+      throw new InternalServerErrorException('서버에러 - 이메일 가져오기');
+    }
+  }
+
+  async getByEmailOrDeletedEmail(email: string): Promise<User> {
+    try {
+      const user: User = await this.createQueryBuilder('users')
+        .select(['users.id', 'users.email', 'users.name'])
+        .withDeleted()
+        .where('users.email = :email', { email })
+        .getOne();
+
+      return user;
+    } catch (err) {
+      throw new InternalServerErrorException(
+        '서버에러 - 이메일 및 삭제된 이메일 가져오기',
+      );
+    }
   }
 }
