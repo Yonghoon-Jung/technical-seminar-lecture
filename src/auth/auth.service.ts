@@ -124,10 +124,10 @@ export class AuthService {
     refreshToken: string,
     { email },
   ): Promise<any> {
-    const { currentHashedRefreshToken, ...user } =
+    const { currentHashedRefreshToken, ...user }: User =
       await this.usersRepository.getByRefreshToken(email);
 
-    const isRefreshTokenMatching = await bcrypt.compare(
+    const isRefreshTokenMatching: boolean = await bcrypt.compare(
       refreshToken,
       currentHashedRefreshToken as string,
     );
