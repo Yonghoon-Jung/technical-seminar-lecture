@@ -75,4 +75,22 @@ export class UsersRepository extends Repository<User> {
 
     return affected;
   }
+
+  async getByRefreshToken(email: string): Promise<User> {
+    try {
+      const user = await this.createQueryBuilder('users')
+        .select([
+          'users.id',
+          'users.name',
+          'users.email',
+          'users.currentHashedRefreshToken',
+        ])
+        .where('users.email = :email', { email })
+        .getOne();
+
+      return user;
+    } catch (err) {
+      throw new InternalServerErrorException(err.message);
+    }
+  }
 }

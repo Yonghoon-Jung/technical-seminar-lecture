@@ -90,14 +90,18 @@ export class AuthService {
     return filteredUser;
   }
 
-  getCookieWithJwtToken(user: FilteredUser): string {
+  getJwtToken(user: FilteredUser): string {
     const payload: TokenPayload = user;
-    const token: string = this.jwtService.sign(payload);
+    const accessTokenOptions = {
+      secret: this.configService.get('JWT_SECRET_KEY'),
+      expiresIn: this.configService.get('JWT_EXPIRESIN'),
+    };
+    const token: string = this.jwtService.sign(payload, accessTokenOptions);
 
     return token;
   }
 
-  async getCookieWithJwtRefreshToken(user: FilteredUser) {
+  async getJwtRefreshToken(user: FilteredUser) {
     const payload: TokenPayload = user;
     const refreshTokenOptions = {
       secret: this.configService.get('JWT_REFRESH_TOKEN_SECRET'),
@@ -114,5 +118,24 @@ export class AuthService {
     }
 
     return token;
+  }
+
+  async getUserIfRefreshTokenMatches(
+    refreshToken: string,
+    { email },
+  ): Promise<any> {
+    const { currentHashedRefreshToken, ...user } =
+      await this.usersRepository.getByRefreshToken(email);
+
+    const isRefreshTokenMatching = await bcrypt.compare(
+      refreshToken,
+      currentHashedRefreshToken as string,
+    );
+
+    if (isRefreshTokenMatching) {
+      return user;
+    }
+
+    return true;
   }
 }

@@ -6,10 +6,10 @@ import { UsersRepository } from 'src/users/repository/users.repository';
 import { TokenPayload } from '../interfaces/token-payload.interface';
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy) {
+export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor(
-    public configService: ConfigService,
     private readonly usersRepository: UsersRepository,
+    public configService: ConfigService,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
@@ -23,7 +23,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     );
 
     if (!user) {
-      throw new UnauthorizedException('정보 불일치');
+      console.log(salt);
+      throw new UnauthorizedException('Token 만료됨');
     }
 
     return user;
