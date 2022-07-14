@@ -2,7 +2,7 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { ResultSetHeader } from 'mysql2';
 import { FilteredUser } from 'src/auth/interfaces/filtered-user.interface';
 import { CustomRepository } from 'src/common/decorators/custom-repository.decorator';
-import { DeleteResult, InsertResult, Repository } from 'typeorm';
+import { DeleteResult, InsertResult, Repository, UpdateResult } from 'typeorm';
 import { User } from '../entity/user.entity';
 
 @CustomRepository(User)
@@ -64,5 +64,15 @@ export class UsersRepository extends Repository<User> {
         '서버에러 - 이메일 및 삭제된 이메일 가져오기',
       );
     }
+  }
+
+  async updateRefreshToken(id: string, token: string): Promise<number> {
+    const { affected }: UpdateResult = await this.createQueryBuilder('users')
+      .update(User)
+      .set({ currentHashedRefreshToken: token })
+      .where('users.id = :id', { id })
+      .execute();
+
+    return affected;
   }
 }

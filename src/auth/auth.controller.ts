@@ -32,7 +32,13 @@ export class AuthController {
   @Post('sign-in')
   async signIn(@Body() signInDto: SignInDto) {
     const user: FilteredUser = await this.authService.signIn(signInDto);
-    const response: string = this.authService.getCookieWithJwtToken(user);
+    const accessToken: string = this.authService.getCookieWithJwtToken(user);
+    const refreshToken: string =
+      await this.authService.getCookieWithJwtRefreshToken(user);
+    const response = {
+      accessToken,
+      refreshToken,
+    };
 
     return { response };
   }

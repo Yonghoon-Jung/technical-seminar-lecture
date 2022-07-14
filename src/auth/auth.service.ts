@@ -96,4 +96,23 @@ export class AuthService {
 
     return token;
   }
+
+  async getCookieWithJwtRefreshToken(user: FilteredUser) {
+    const payload: TokenPayload = user;
+    const refreshTokenOptions = {
+      secret: this.configService.get('JWT_REFRESH_TOKEN_SECRET'),
+      expiresIn: this.configService.get('JWT_REFRESH_EXPIRESIN'),
+    };
+    const token: string = this.jwtService.sign(payload, refreshTokenOptions);
+    const updatedToken = await this.usersRepository.updateRefreshToken(
+      user.id,
+      token,
+    );
+
+    if (!updatedToken) {
+      throw new BadGatewayException('Refresh Token 저장 실패');
+    }
+
+    return token;
+  }
 }

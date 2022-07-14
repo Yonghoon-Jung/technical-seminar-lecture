@@ -1,3 +1,4 @@
+import { Exclude } from 'class-transformer';
 import { IsEmail, IsNotEmpty, IsString, IsUUID, Length } from 'class-validator';
 import {
   BaseEntity,
@@ -44,6 +45,11 @@ export class User extends BaseEntity {
     select: false,
   })
   salt: string;
+
+  @IsString()
+  @Column({ nullable: true })
+  @Exclude()
+  currentHashedRefreshToken?: string;
 
   @CreateDateColumn({
     name: 'created_at',
