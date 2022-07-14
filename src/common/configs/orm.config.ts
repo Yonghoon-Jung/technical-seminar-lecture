@@ -1,5 +1,6 @@
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModuleAsyncOptions } from '@nestjs/typeorm';
+import { Lecture } from 'src/lectures/entity/lecture.entity';
 import { User } from 'src/users/entity/user.entity';
 
 export const ormConfigOptions: TypeOrmModuleAsyncOptions = {
@@ -14,6 +15,6 @@ export const ormConfigOptions: TypeOrmModuleAsyncOptions = {
     database: configService.get<string>('DB_DATABASE'),
     synchronize: configService.get<boolean>('DB_SYNCHRONIZE'),
     logging: configService.get<boolean>('DB_LOGGING'),
-    entities: [User],
+    entities: [User, Lecture],
   }),
 };

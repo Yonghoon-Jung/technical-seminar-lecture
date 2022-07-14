@@ -1,14 +1,15 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
-  Patch,
   Post,
   UseGuards,
 } from '@nestjs/common';
 import { HTTP_STATUS_CODE } from 'src/common/configs/status.config';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import JwtAuthenticationGuard from 'src/common/guards/jwt-authentication.guard';
+import JwtRefreshGuard from 'src/common/guards/jwt-refresh.guard';
 import { User } from 'src/users/entity/user.entity';
 import { AuthService } from './auth.service';
 import { SignDownDto } from './dto/sign-down.dto';
@@ -32,7 +33,14 @@ export class AuthController {
   @Post('sign-in')
   async signIn(@Body() signInDto: SignInDto) {
     const user: FilteredUser = await this.authService.signIn(signInDto);
-    const response: string = this.authService.getCookieWithJwtToken(user);
+    const accessToken: string = this.authService.getJwtToken(user);
+    const refreshToken: string = await this.authService.getJwtRefreshToken(
+      user,
+    );
+    const response = {
+      accessToken,
+      refreshToken,
+    };
 
     return { response };
   }
@@ -52,5 +60,13 @@ export class AuthController {
     @Body() signDownDto: SignDownDto,
   ) {
     await this.authService.signDown(loginUser, signDownDto);
+  }
+
+  @UseGuards(JwtRefreshGuard)
+  @Get('refresh')
+  refresh(@CurrentUser() loginUser: User) {
+    const accessTokenCookie = this.authService.getJwtRefreshToken(loginUser);
+
+    return accessTokenCookie;
   }
 }

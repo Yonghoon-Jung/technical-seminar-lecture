@@ -90,10 +90,52 @@ export class AuthService {
     return filteredUser;
   }
 
-  getCookieWithJwtToken(user: FilteredUser): string {
+  getJwtToken(user: FilteredUser): string {
     const payload: TokenPayload = user;
-    const token: string = this.jwtService.sign(payload);
+    const accessTokenOptions = {
+      secret: this.configService.get('JWT_SECRET_KEY'),
+      expiresIn: this.configService.get('JWT_EXPIRESIN'),
+    };
+    const token: string = this.jwtService.sign(payload, accessTokenOptions);
 
     return token;
+  }
+
+  async getJwtRefreshToken(user: FilteredUser) {
+    const payload: TokenPayload = user;
+    const refreshTokenOptions = {
+      secret: this.configService.get('JWT_REFRESH_TOKEN_SECRET'),
+      expiresIn: this.configService.get('JWT_REFRESH_EXPIRESIN'),
+    };
+    const token: string = this.jwtService.sign(payload, refreshTokenOptions);
+    const updatedToken = await this.usersRepository.updateRefreshToken(
+      user.id,
+      token,
+    );
+
+    if (!updatedToken) {
+      throw new BadGatewayException('Refresh Token 저장 실패');
+    }
+
+    return token;
+  }
+
+  async getUserIfRefreshTokenMatches(
+    refreshToken: string,
+    { email },
+  ): Promise<any> {
+    const { currentHashedRefreshToken, ...user } =
+      await this.usersRepository.getByRefreshToken(email);
+
+    const isRefreshTokenMatching = await bcrypt.compare(
+      refreshToken,
+      currentHashedRefreshToken as string,
+    );
+
+    if (isRefreshTokenMatching) {
+      return user;
+    }
+
+    return true;
   }
 }
