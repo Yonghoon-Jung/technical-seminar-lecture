@@ -108,12 +108,10 @@ export class AuthService {
       expiresIn: this.configService.get('JWT_REFRESH_EXPIRESIN'),
     };
     const token: string = this.jwtService.sign(payload, refreshTokenOptions);
-    const updatedToken = await this.usersRepository.updateRefreshToken(
-      user.id,
-      token,
-    );
+    const isUpdatedToken: boolean =
+      await this.usersRepository.updateRefreshToken(user.id, token);
 
-    if (!updatedToken) {
+    if (!isUpdatedToken) {
       throw new BadGatewayException('Refresh Token 저장 실패');
     }
 
@@ -122,7 +120,7 @@ export class AuthService {
 
   async getUserIfRefreshTokenMatches(
     refreshToken: string,
-    { email },
+    { email }: any,
   ): Promise<any> {
     const { currentHashedRefreshToken, ...user }: User =
       await this.usersRepository.getByRefreshToken(email);
