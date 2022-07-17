@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { envConfig } from './common/configs/env.config';
 import { ormConfigOptions } from './common/configs/orm.config';
 import { UsersModule } from './users/users.module';
+import { LecturesModule } from './lectures/lectures.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { UsersModule } from './users/users.module';
     TypeOrmModule.forRootAsync(ormConfigOptions),
     AuthModule,
     UsersModule,
+    LecturesModule,
   ],
   controllers: [AppController],
   providers: [AppService, ConfigService],
