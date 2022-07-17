@@ -66,14 +66,14 @@ export class UsersRepository extends Repository<User> {
     }
   }
 
-  async updateRefreshToken(id: string, token: string): Promise<number> {
+  async updateRefreshToken(id: string, token: string): Promise<boolean> {
     const { affected }: UpdateResult = await this.createQueryBuilder('users')
       .update(User)
       .set({ currentHashedRefreshToken: token })
       .where('users.id = :id', { id })
       .execute();
 
-    return affected;
+    return !!affected;
   }
 
   async getByRefreshToken(email: string): Promise<User> {
