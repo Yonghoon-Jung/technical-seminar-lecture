@@ -103,7 +103,7 @@ export class AuthService {
 
   async getJwtRefreshToken(user: FilteredUser) {
     const payload: TokenPayload = user;
-    const refreshTokenOptions = {
+    const refreshTokenOptions: any = {
       secret: this.configService.get('JWT_REFRESH_TOKEN_SECRET'),
       expiresIn: this.configService.get('JWT_REFRESH_EXPIRESIN'),
     };
