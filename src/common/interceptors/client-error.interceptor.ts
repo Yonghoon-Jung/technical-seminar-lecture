@@ -7,6 +7,13 @@ import {
 } from '@nestjs/common';
 import { map } from 'rxjs/operators';
 
+interface SuccessData {
+  success: boolean;
+  date: string;
+  statusCode: number;
+  response?: any;
+}
+
 @Injectable()
 export class ClientErrorInterceptor implements NestInterceptor {
   constructor(private readonly logger: Logger) {}
@@ -16,10 +23,10 @@ export class ClientErrorInterceptor implements NestInterceptor {
 
     return next.handle().pipe(
       map(({ statusCode, response }) => {
-        const successData = {
+        const successData: SuccessData = {
           success: true,
           date: new Date().toLocaleString(),
-          statusCode: statusCode || status,
+          statusCode: status || statusCode,
           response,
         };
 

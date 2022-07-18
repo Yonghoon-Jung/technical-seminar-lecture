@@ -8,6 +8,7 @@ import { envConfig } from './common/configs/env.config';
 import { ormConfigOptions } from './common/configs/orm.config';
 import { UsersModule } from './users/users.module';
 import { LecturesModule } from './lectures/lectures.module';
+import { UserPhotoModule } from './user-photo/user-photo.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { LecturesModule } from './lectures/lectures.module';
     AuthModule,
     UsersModule,
     LecturesModule,
+    UserPhotoModule,
   ],
   controllers: [AppController],
   providers: [AppService, ConfigService],

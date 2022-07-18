@@ -23,7 +23,6 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     );
 
     if (!user) {
-      console.log(salt);
       throw new UnauthorizedException('Token 만료됨');
     }
 
