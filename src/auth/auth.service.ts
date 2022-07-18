@@ -109,7 +109,7 @@ export class AuthService {
     };
     const token: string = this.jwtService.sign(payload, refreshTokenOptions);
     const isUpdatedToken: boolean =
-      await this.usersRepository.updateRefreshToken(user.id, token);
+      await this.usersRepository.updateRefreshToken(user.idx, token);
 
     if (!isUpdatedToken) {
       throw new BadGatewayException('Refresh Token 저장 실패');

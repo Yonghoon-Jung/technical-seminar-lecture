@@ -22,12 +22,12 @@ export class UsersRepository extends Repository<User> {
     }
   }
 
-  async softDeleteUser({ id }: FilteredUser) {
+  async softDeleteUser({ idx }: FilteredUser) {
     try {
       const { affected }: DeleteResult = await this.createQueryBuilder()
         .softDelete()
         .from(User)
-        .where('id = :id', { id })
+        .where('idx = :idx', { idx })
         .execute();
 
       return !!affected;
@@ -39,7 +39,7 @@ export class UsersRepository extends Repository<User> {
   async getByEmail(email: string): Promise<User> {
     try {
       const user: User = await this.createQueryBuilder('users')
-        .select(['users.id', 'users.email', 'users.name'])
+        .select(['users.idx', 'users.email', 'users.name'])
         .addSelect('users.salt')
         .where('users.email = :email', { email })
         .getOne();
@@ -53,7 +53,7 @@ export class UsersRepository extends Repository<User> {
   async getByEmailOrDeletedEmail(email: string): Promise<User> {
     try {
       const user: User = await this.createQueryBuilder('users')
-        .select(['users.id', 'users.email', 'users.name'])
+        .select(['users.idx', 'users.email', 'users.name'])
         .withDeleted()
         .where('users.email = :email', { email })
         .getOne();
@@ -66,11 +66,11 @@ export class UsersRepository extends Repository<User> {
     }
   }
 
-  async updateRefreshToken(id: string, token: string): Promise<boolean> {
+  async updateRefreshToken(idx: string, token: string): Promise<boolean> {
     const { affected }: UpdateResult = await this.createQueryBuilder('users')
       .update(User)
       .set({ currentHashedRefreshToken: token })
-      .where('users.id = :id', { id })
+      .where('users.idx = :idx', { idx })
       .execute();
 
     return !!affected;
@@ -80,7 +80,7 @@ export class UsersRepository extends Repository<User> {
     try {
       const user = await this.createQueryBuilder('users')
         .select([
-          'users.id',
+          'users.idx',
           'users.name',
           'users.email',
           'users.currentHashedRefreshToken',

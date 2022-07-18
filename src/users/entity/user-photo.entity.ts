@@ -1,31 +1,40 @@
 import { IsString, IsUUID } from 'class-validator';
 import {
   BaseEntity,
+  Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  JoinColumn,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { User } from './user.entity';
 
-@Entity('lectures')
-export class Lecture extends BaseEntity {
+@Entity('user-photo')
+export class UserPhoto extends BaseEntity {
   @IsUUID()
   @PrimaryGeneratedColumn('uuid')
   idx: string;
 
   @IsString()
-  description: string;
+  @Column()
+  url: string;
+
+  @OneToOne(() => User)
+  @JoinColumn({ name: 'user_idx' })
+  userIdx: User;
 
   @CreateDateColumn({
     name: 'created_at',
-    comment: '테크톡 생성 시간',
+    comment: '회원가입 시간',
   })
   createdAt: Date;
 
   @UpdateDateColumn({
     name: 'updated_at',
-    comment: '마지막으로 테크톡을 수정한 시간',
+    comment: '마지막으로 로그인을 시도한 시간',
   })
   updatedAt: Date;
 
