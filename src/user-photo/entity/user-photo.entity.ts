@@ -10,9 +10,9 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { User } from './user.entity';
+import { User } from '../../users/entity/user.entity';
 
-@Entity('user-photo')
+@Entity('user_photo')
 export class UserPhoto extends BaseEntity {
   @IsUUID()
   @PrimaryGeneratedColumn('uuid')
