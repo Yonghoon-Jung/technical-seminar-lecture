@@ -1,6 +1,6 @@
 import { CustomRepository } from 'src/common/decorators/custom-repository.decorator';
 import { User } from 'src/users/entity/user.entity';
-import { InsertResult, Repository, UpdateResult } from 'typeorm';
+import { DeleteResult, InsertResult, Repository, UpdateResult } from 'typeorm';
 import { UserPhoto } from '../entity/user-photo.entity';
 
 @CustomRepository(UserPhoto)
@@ -15,7 +15,7 @@ export class UserPhotoRepository extends Repository<UserPhoto> {
     return !!affected;
   }
 
-  async saveUserPhoto(userPhotoUrl: string, idx: User): Promise<boolean> {
+  async insertUserPhoto(userPhotoUrl: string, idx: User): Promise<boolean> {
     const { raw }: InsertResult = await this.createQueryBuilder('userPhoto')
       .insert()
       .into(UserPhoto)
@@ -35,7 +35,17 @@ export class UserPhotoRepository extends Repository<UserPhoto> {
       ])
       .where('userPhoto.userIdx = :idx', { idx })
       .getOne();
-
+    console.log(userPhotoUrl);
     return userPhotoUrl;
+  }
+
+  async deleteUserPhoto(idx: string): Promise<boolean> {
+    const { affected }: DeleteResult = await this.createQueryBuilder()
+      .delete()
+      .from(UserPhoto)
+      .where('user_idx = :idx', { idx })
+      .execute();
+
+    return !!affected;
   }
 }

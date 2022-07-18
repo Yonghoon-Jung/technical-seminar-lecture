@@ -1,5 +1,6 @@
 import {
   Controller,
+  Delete,
   Get,
   HttpCode,
   Put,
@@ -45,5 +46,14 @@ export class UsersController {
         msg: '성공',
       },
     };
+  }
+
+  @UseGuards(JwtAuthenticationGuard)
+  @HttpCode(HTTP_STATUS_CODE.success.noContent)
+  @Delete()
+  async deleteUserPhoto(@CurrentUser() loginUser: User) {
+    const response = await this.userPhotoService.deleteUserPhoto(loginUser);
+
+    return { response };
   }
 }
