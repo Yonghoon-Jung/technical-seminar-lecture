@@ -32,14 +32,16 @@ export class UsersController {
   async updateUserPhoto(
     @UploadedFile() image: Express.Multer.File,
     @CurrentUser() loginUser: User,
-  ) {
+  ): Promise<object> {
     const userPhotoUrl: string = await this.imagesService.uploadUserPhotoToS3(
       'profile',
       image,
       loginUser.idx,
     );
 
-    await this.userPhotoService.updateUserPhoto(userPhotoUrl, loginUser);
+    const originUserPhotoUrl: string =
+      await this.userPhotoService.saveUserPhoto(userPhotoUrl, loginUser);
+    await this.imagesService.deleteUserPhotoS3Object(originUserPhotoUrl);
 
     return {
       response: {
@@ -51,9 +53,11 @@ export class UsersController {
   @UseGuards(JwtAuthenticationGuard)
   @HttpCode(HTTP_STATUS_CODE.success.noContent)
   @Delete()
-  async deleteUserPhoto(@CurrentUser() loginUser: User) {
-    const response = await this.userPhotoService.deleteUserPhoto(loginUser);
+  async deleteUserPhoto(@CurrentUser() loginUser: User): Promise<void> {
+    const userPhotoUrl: string = await this.userPhotoService.deleteUserPhoto(
+      loginUser,
+    );
 
-    return { response };
+    await this.imagesService.deleteUserPhotoS3Object(userPhotoUrl);
   }
 }

@@ -3,7 +3,6 @@ import {
   BaseEntity,
   Column,
   CreateDateColumn,
-  DeleteDateColumn,
   Entity,
   JoinColumn,
   OneToOne,
@@ -28,19 +27,13 @@ export class UserPhoto extends BaseEntity {
 
   @CreateDateColumn({
     name: 'created_at',
-    comment: '회원가입 시간',
+    comment: '저장 시간',
   })
   createdAt: Date;
 
   @UpdateDateColumn({
     name: 'updated_at',
-    comment: '마지막으로 로그인을 시도한 시간',
+    comment: '마지막으로 수정 시간',
   })
   updatedAt: Date;
-
-  @DeleteDateColumn({
-    name: 'deleted_at',
-    comment: '삭제일',
-  })
-  deletedAt: Date | null;
 }
