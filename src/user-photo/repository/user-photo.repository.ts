@@ -35,7 +35,7 @@ export class UserPhotoRepository extends Repository<UserPhoto> {
       ])
       .where('userPhoto.userIdx = :idx', { idx })
       .getOne();
-    console.log(userPhotoUrl);
+
     return userPhotoUrl;
   }
 

@@ -19,27 +19,47 @@ export class ImagesService {
 
   async uploadUserPhotoToS3(
     folder: string,
-    file: any,
+    image: any,
     userIdx: string,
   ): Promise<string> {
     try {
+      const extentionName: string = image.originalname.split('.')[1];
       const userPhotoUrl: string = `${folder}/${Date.now()}_${path.basename(
         userIdx.slice(0, 10),
-      )}`.replace(/ /g, '');
+      )}.${extentionName}`.replace(/ /g, '');
 
       this.awsS3
         .putObject({
           Bucket: this.S3_BUCKET_NAME,
           Key: userPhotoUrl,
-          Body: file.buffer,
+          Body: image.buffer,
           ACL: 'public-read',
-          ContentType: file.mimetype,
+          ContentType: image.mimetype,
         })
         .promise();
 
       return userPhotoUrl;
     } catch (error) {
       throw new BadRequestException(`File upload failed : ${error}`);
+    }
+  }
+
+  async deleteUserPhotoS3Object(
+    userPhotoUrl: string,
+    callback?: (err: AWS.AWSError, data: AWS.S3.DeleteObjectOutput) => void,
+  ): Promise<any> {
+    try {
+      await this.awsS3
+        .deleteObject(
+          {
+            Bucket: this.S3_BUCKET_NAME,
+            Key: userPhotoUrl,
+          },
+          callback,
+        )
+        .promise();
+    } catch (error) {
+      throw new BadRequestException(`Failed to delete file : ${error}`);
     }
   }
 }

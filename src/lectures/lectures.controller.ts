@@ -15,7 +15,6 @@ export class LecturesController {
     @CurrentUser() loginUser: User,
     @Body() createLectureDto: CreateLectureDto,
   ) {
-    console.log(loginUser);
     const response = await this.lecturesService.createLecture(
       loginUser,
       createLectureDto,

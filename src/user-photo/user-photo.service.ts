@@ -11,20 +11,20 @@ import { UserPhotoRepository } from './repository/user-photo.repository';
 export class UserPhotoService {
   constructor(private readonly userPhotoRepository: UserPhotoRepository) {}
 
-  async saveUserPhoto(userPhotoUrl: string, loginUser: User) {
-    const isUserPhoto: UserPhoto =
-      await this.userPhotoRepository.getUserPhotoUrl(loginUser);
+  async saveUserPhoto(userPhotoUrl: string, loginUser: User): Promise<string> {
+    const userPhoto: UserPhoto = await this.userPhotoRepository.getUserPhotoUrl(
+      loginUser,
+    );
 
-    if (!isUserPhoto) {
-      this.insertUserPhoto(userPhotoUrl, loginUser);
+    if (!userPhoto) {
+      await this.insertUserPhoto(userPhotoUrl, loginUser);
     }
+    await this.updateUserPhoto(userPhotoUrl, loginUser);
 
-    this.updateUserPhoto(userPhotoUrl, loginUser);
-
-    return;
+    return userPhoto.url;
   }
 
-  async insertUserPhoto(userPhotoUrl: string, loginUser: User) {
+  async insertUserPhoto(userPhotoUrl: string, loginUser: User): Promise<void> {
     const isCreatedUserPhoto: boolean =
       await this.userPhotoRepository.insertUserPhoto(userPhotoUrl, loginUser);
 
@@ -46,8 +46,10 @@ export class UserPhotoService {
     return;
   }
 
-  async deleteUserPhoto(loginUser: User) {
-    const { url } = await this.userPhotoRepository.getUserPhotoUrl(loginUser);
+  async deleteUserPhoto(loginUser: User): Promise<string> {
+    const { url }: UserPhoto = await this.userPhotoRepository.getUserPhotoUrl(
+      loginUser,
+    );
 
     if (!url) {
       throw new BadRequestException('유저 사진이 존재하지 않음');
@@ -58,5 +60,7 @@ export class UserPhotoService {
     if (!isDeleteResult) {
       throw new BadGatewayException('유저 사진 삭제 실패');
     }
+
+    return url;
   }
 }
