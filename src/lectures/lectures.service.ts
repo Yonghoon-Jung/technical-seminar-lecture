@@ -11,5 +11,7 @@ export class LecturesService {
     return result;
   }
 
-  async readLectures() {}
+  async readLectures() {
+    console.log('test');
+  }
 }
