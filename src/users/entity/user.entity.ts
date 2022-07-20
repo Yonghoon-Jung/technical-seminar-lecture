@@ -14,7 +14,7 @@ import {
 export class User extends BaseEntity {
   @IsUUID()
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  idx: string;
 
   @IsNotEmpty({ message: '이메일을 입력해 주세요.' })
   @IsString()

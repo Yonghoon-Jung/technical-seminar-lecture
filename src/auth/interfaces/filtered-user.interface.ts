@@ -1,5 +1,5 @@
 export interface FilteredUser {
-  id: string;
+  idx: string;
   email: string;
   name: string;
 }

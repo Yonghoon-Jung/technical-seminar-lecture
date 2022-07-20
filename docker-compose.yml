@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  nest:
+    build:
+      context: .
+      dockerfile: dockerfile
+    image: nest-dev
+    container_name: nest-dev
+    ports:
+      - 8080:8080
+
+    env_file: ./.env.dev
+    restart: always
