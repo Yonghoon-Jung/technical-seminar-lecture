@@ -58,6 +58,6 @@ jobs:
           password: ${{ secrets.TECHNICAL_TOKEN }}
       - name: Docker run 
         run: |
-         cd ~/mohae-prod
+         cd ~/technical
                 docker-compose pull
                 docker-compose up --force-recreate --build -d
