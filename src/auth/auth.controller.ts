@@ -2,27 +2,23 @@ import {
   Body,
   Controller,
   Get,
-  Header,
   HttpCode,
   HttpStatus,
   Post,
-  Query,
   Req,
-  Res,
   UseGuards,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { AuthGuard } from '@nestjs/passport';
-import { Request, Response } from 'express';
+import { Request } from 'express';
 import { HTTP_STATUS_CODE } from 'src/common/configs/status.config';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { ResponseDto } from 'src/common/dtos/all-response.dto';
 import JwtAuthenticationGuard from 'src/common/guards/jwt-authentication.guard';
 import JwtRefreshGuard from 'src/common/guards/jwt-refresh.guard';
 import { User } from 'src/users/entity/user.entity';
+import { GoogleUserService } from './auth-google.service';
 import { KakaoUserServcie } from './auth-kakao.service';
 import { AuthService } from './auth.service';
-import { KakaoSignInDto } from './dto/kakao-sign-in.dto';
 import { SignDownDto } from './dto/sign-down.dto';
 import { SignInDto } from './dto/sign-in.dto';
 import { SignUpDto } from './dto/sign-up.dto';
@@ -33,6 +29,7 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly kakaoUserService: KakaoUserServcie,
+    private readonly googleUserService: GoogleUserService,
   ) {}
 
   @HttpCode(HTTP_STATUS_CODE.success.created)
@@ -100,11 +97,23 @@ export class AuthController {
   async kakaoSignInCallback(@Req() req: Request): Promise<ResponseDto> {
     const kakaoUser: any = req.user;
 
-    await this.kakaoUserService.kakaoSignIn(kakaoUser);
+    return { response: kakaoUser.accessToken };
+  }
 
-    const accessToken: string =
-      this.kakaoUserService.getKakaoJwtToken(kakaoUser);
+  /*
+  ###### 구글 로그인 API
+  */
+  @Get('google')
+  @UseGuards(AuthGuard('google'))
+  async googleAuth(@Req() req) {
+    return;
+  }
 
-    return { response: accessToken };
+  @Get('google/redirect') // 2
+  @UseGuards(AuthGuard('google'))
+  googleAuthRedirect(@Req() req) {
+    const googleUser = req.user;
+
+    return this.googleUserService.googleSignIn(googleUser);
   }
 }
