@@ -14,6 +14,7 @@ import { JwtRefreshTokenStrategy } from './strategies/jwt-refresh.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { KakaoStrategy } from './strategies/kakao.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
+import { NaverStrategy } from './strategies/naver.strategy';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { LocalStrategy } from './strategies/local.strategy';
     KakaoUserServcie,
     GoogleStrategy,
     GoogleUserService,
+    NaverStrategy,
   ],
 })
 export class AuthModule {}

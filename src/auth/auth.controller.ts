@@ -116,4 +116,19 @@ export class AuthController {
 
     return this.googleUserService.googleSignIn(googleUser);
   }
+
+  /*
+  ###### 네이버 로그인 API
+  */
+  @UseGuards(AuthGuard('naver'))
+  @Get('naver')
+  async naverlogin() {
+    return;
+  }
+
+  @UseGuards(AuthGuard('naver'))
+  @Get('naver/redirect')
+  async callback(@Req() req): Promise<any> {
+    return req.user;
+  }
 }
