@@ -1,6 +1,7 @@
 import { IsString, IsUUID } from 'class-validator';
 import {
   BaseEntity,
+  Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
@@ -15,7 +16,20 @@ export class Lecture extends BaseEntity {
   idx: string;
 
   @IsString()
+  @Column()
   description: string;
+
+  @IsString()
+  @Column({
+    name: 'lecture_url',
+  })
+  lectureUrl: string;
+
+  @IsString()
+  @Column({
+    name: 'lecturer_idx',
+  })
+  lecturerIdx: string;
 
   @CreateDateColumn({
     name: 'created_at',

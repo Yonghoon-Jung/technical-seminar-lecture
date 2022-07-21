@@ -22,12 +22,12 @@ export class ClientErrorInterceptor implements NestInterceptor {
     const status = context.switchToHttp().getResponse().statusCode;
 
     return next.handle().pipe(
-      map(({ statusCode, response }) => {
+      map((data = {}) => {
         const successData: SuccessData = {
           success: true,
           date: new Date().toLocaleString(),
-          statusCode: status || statusCode,
-          response,
+          statusCode: status || data.statusCode,
+          response: data.response,
         };
 
         this.logger.verbose(
