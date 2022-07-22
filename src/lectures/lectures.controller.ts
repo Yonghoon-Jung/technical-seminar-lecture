@@ -3,10 +3,10 @@ import {
   Controller,
   Get,
   HttpCode,
+  HttpStatus,
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { HTTP_STATUS_CODE } from 'src/common/configs/status.config';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { ResponseDto } from 'src/common/dtos/all-response.dto';
 import JwtAuthenticationGuard from 'src/common/guards/jwt-authentication.guard';
@@ -20,7 +20,7 @@ export class LecturesController {
   constructor(private readonly lecturesService: LecturesService) {}
 
   @UseGuards(JwtAuthenticationGuard)
-  @HttpCode(HTTP_STATUS_CODE.success.created)
+  @HttpCode(HttpStatus.CREATED)
   @Post()
   async createLecture(
     @CurrentUser() loginUser: User,
@@ -32,7 +32,7 @@ export class LecturesController {
   }
 
   @UseGuards(JwtAuthenticationGuard)
-  @HttpCode(HTTP_STATUS_CODE.success.ok)
+  @HttpCode(HttpStatus.OK)
   @Get()
   async readAllLectures(): Promise<ResponseDto> {
     const response: Lecture | Lecture[] =
