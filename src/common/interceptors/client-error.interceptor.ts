@@ -12,6 +12,8 @@ interface SuccessData {
   date: string;
   statusCode: number;
   response?: any;
+  accessToken?: any;
+  refreshToken?: any;
 }
 
 @Injectable()
@@ -23,11 +25,14 @@ export class ClientErrorInterceptor implements NestInterceptor {
 
     return next.handle().pipe(
       map((data = {}) => {
+        const { statusCode, response, accessToken, refreshToken }: any = data;
         const successData: SuccessData = {
           success: true,
           date: new Date().toLocaleString(),
-          statusCode: status || data.statusCode,
-          response: data.response,
+          statusCode: status || statusCode,
+          response,
+          accessToken,
+          refreshToken,
         };
 
         this.logger.verbose(

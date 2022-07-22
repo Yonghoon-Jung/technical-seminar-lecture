@@ -3,6 +3,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-kakao';
 import * as dotenv from 'dotenv';
 import * as path from 'path';
+import { ApiPlatformEnum } from 'src/common/enums/api-platform.enum';
 
 dotenv.config({
   path: path.resolve(process.env.NODE_ENV === 'dev' ? '.env.dev' : '.env.prod'),
@@ -19,7 +20,7 @@ export class KakaoStrategy extends PassportStrategy(Strategy, 'kakao') {
   async validate(
     accessToken: string,
     refreshToken: string,
-    profile,
+    profile: any,
     done: any,
   ) {
     const profileJson: any = profile._json;
@@ -32,6 +33,7 @@ export class KakaoStrategy extends PassportStrategy(Strategy, 'kakao') {
           ? kakaoAccount.email
           : null,
       photoUrl: kakaoAccount.profile.profile_image_url,
+      platformIdx: ApiPlatformEnum.KAKAO,
       accessToken,
     };
 

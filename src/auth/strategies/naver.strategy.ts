@@ -4,6 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { AuthService } from '../auth.service';
 import * as dotenv from 'dotenv';
 import * as path from 'path';
+import { ApiPlatformEnum } from 'src/common/enums/api-platform.enum';
 
 dotenv.config({
   path: path.resolve(process.env.NODE_ENV === 'dev' ? '.env.dev' : '.env.prod'),
@@ -27,11 +28,12 @@ export class NaverStrategy extends PassportStrategy(Strategy, 'naver') {
   ): Promise<any> {
     const { id, email, nickname, name, profile_image } = profile._json.response;
     const userProfile = {
-      naverId: id,
+      idx: id,
       email,
       nickname,
       name,
-      profile_image,
+      photoUrl: profile_image,
+      platformIdx: ApiPlatformEnum.NAVER,
       accessToken,
     };
 

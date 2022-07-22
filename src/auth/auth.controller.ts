@@ -18,8 +18,7 @@ import { ResponseDto } from 'src/common/dtos/all-response.dto';
 import JwtAuthenticationGuard from 'src/common/guards/jwt-authentication.guard';
 import JwtRefreshGuard from 'src/common/guards/jwt-refresh.guard';
 import { User } from 'src/users/entity/user.entity';
-import { GoogleUserService } from './auth-google.service';
-import { KakaoSignInService } from './auth-kakao.service';
+import { ApiSignInService } from './auth-api-platform.service';
 import { AuthService } from './auth.service';
 import { SignDownDto } from './dto/sign-down.dto';
 import { SignInDto } from './dto/sign-in.dto';
@@ -29,9 +28,8 @@ import { FilteredUser } from './interfaces/filtered-user.interface';
 @Controller('auth')
 export class AuthController {
   constructor(
-    private readonly authService: AuthService,
-    private readonly kakaoSignInService: KakaoSignInService,
-    private readonly googleUserService: GoogleUserService,
+    // private readonly authService: AuthService,
+    private readonly apiSignInService: ApiSignInService,
   ) {}
 
   // @HttpCode(HttpStatus.CREATED)
@@ -89,8 +87,8 @@ export class AuthController {
   @UseGuards(AuthGuard('kakao'))
   @HttpCode(HttpStatus.OK)
   @Get('kakao')
-  kakaoSignIn(): number {
-    return HttpStatus.OK;
+  kakaoSignIn(): void {
+    return;
   }
 
   @UseGuards(AuthGuard('kakao'))
@@ -98,15 +96,10 @@ export class AuthController {
   @Get('kakao/redirect')
   async kakaoSignInRedirect(@Req() req: Request): Promise<ResponseDto> {
     const { accessToken, ...kakaoUser }: any = req.user;
-    await this.kakaoSignInService.saveKakaoSignIn(kakaoUser);
 
-    const response = {
-      response: {
-        token: accessToken,
-      },
-    };
+    await this.apiSignInService.saveApiSignInInformation(kakaoUser);
 
-    return response;
+    return { accessToken };
   }
 
   @UseGuards(AuthGuard('kakao'))
@@ -119,32 +112,42 @@ export class AuthController {
   /*
   ###### 구글 로그인 API
   */
-  @Get('google')
   @UseGuards(AuthGuard('google'))
-  async googleSignIn(@Req() req) {
+  @HttpCode(HttpStatus.OK)
+  @Get('google')
+  googleSignIn(): void {
     return;
   }
 
-  @Get('google/redirect') // 2
   @UseGuards(AuthGuard('google'))
-  googleSignInRedirect(@Req() req) {
-    const googleUser = req.user;
+  @HttpCode(HttpStatus.OK)
+  @Get('google/redirect')
+  async googleSignInRedirect(@Req() req: Request): Promise<ResponseDto> {
+    const { accessToken, ...googleUser }: any = req.user;
 
-    return this.googleUserService.googleSignIn(googleUser);
+    await this.apiSignInService.saveApiSignInInformation(googleUser);
+
+    return { accessToken };
   }
 
   /*
   ###### 네이버 로그인 API
   */
   @UseGuards(AuthGuard('naver'))
+  @HttpCode(HttpStatus.OK)
   @Get('naver')
-  async naverSignIn() {
+  naverSignIn(): void {
     return;
   }
 
   @UseGuards(AuthGuard('naver'))
+  @HttpCode(HttpStatus.OK)
   @Get('naver/redirect')
-  async naverSignInRedirect(@Req() req): Promise<any> {
-    return req.user;
+  async naverSignInRedirect(@Req() req: Request): Promise<ResponseDto> {
+    const { accessToken, ...naverUser }: any = req.user;
+
+    await this.apiSignInService.saveApiSignInInformation(naverUser);
+
+    return { accessToken };
   }
 }

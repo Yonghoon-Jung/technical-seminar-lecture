@@ -7,4 +7,5 @@ export class ApiSignInDto extends PickType(User, [
   'nickname',
   'photoUrl',
   'email',
+  'platformIdx',
 ] as const) {}

@@ -5,8 +5,7 @@ import { PassportModule } from '@nestjs/passport';
 import { jwtConfig } from 'src/common/configs/jwt.config';
 import { NewTypeOrmModule } from 'src/common/configs/new-orm.module';
 import { UsersRepository } from 'src/users/repository/users.repository';
-import { GoogleUserService } from './auth-google.service';
-import { KakaoSignInService } from './auth-kakao.service';
+import { ApiSignInService } from './auth-api-platform.service';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { GoogleStrategy } from './strategies/google.strategy';
@@ -26,13 +25,12 @@ import { NaverStrategy } from './strategies/naver.strategy';
   controllers: [AuthController],
   providers: [
     AuthService,
+    ApiSignInService,
     LocalStrategy,
     JwtStrategy,
     JwtRefreshTokenStrategy,
     KakaoStrategy,
-    KakaoSignInService,
     GoogleStrategy,
-    GoogleUserService,
     NaverStrategy,
   ],
 })

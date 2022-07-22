@@ -23,7 +23,7 @@ export class UsersRepository extends Repository<User> {
     }
   }
 
-  async getByUser(userIdx: string): Promise<User> {
+  async getByUser({ idx, platformIdx }): Promise<User> {
     try {
       const user: User = await this.createQueryBuilder('users')
         .select([
@@ -33,7 +33,8 @@ export class UsersRepository extends Repository<User> {
           'users.nickname AS nickname',
           'users.photo_url AS photoUrl',
         ])
-        .where('users.idx = :userIdx', { userIdx })
+        .where('users.idx = :idx', { idx })
+        .andWhere('users.platform_idx = :platformIdx', { platformIdx })
         .getRawOne();
 
       return user;

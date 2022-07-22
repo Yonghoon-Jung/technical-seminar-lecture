@@ -42,6 +42,12 @@ export class User extends BaseEntity {
   })
   photoUrl: string;
 
+  @IsNotEmpty()
+  @Column({
+    name: 'platform_idx',
+  })
+  platformIdx: number;
+
   // @IsNotEmpty()
   // @IsString()
   // @Column({

@@ -4,18 +4,18 @@ import { UsersRepository } from 'src/users/repository/users.repository';
 import { ApiSignInDto } from './dto/api-sign-in.dto';
 
 @Injectable()
-export class KakaoSignInService {
+export class ApiSignInService {
   constructor(private readonly usersRepository: UsersRepository) {}
 
-  async saveKakaoSignIn(kakaoUser: ApiSignInDto): Promise<void> {
-    const userInfo: User = await this.usersRepository.getByUser(kakaoUser.idx);
+  async saveApiSignInInformation(loginUser: ApiSignInDto): Promise<void> {
+    const userInfo: User = await this.usersRepository.getByUser(loginUser);
 
     if (userInfo) {
       return;
     }
 
     const isSavedResult: boolean = await this.usersRepository.saveUser(
-      kakaoUser,
+      loginUser,
     );
 
     if (!isSavedResult) {
