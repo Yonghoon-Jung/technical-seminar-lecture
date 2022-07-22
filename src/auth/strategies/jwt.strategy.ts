@@ -17,15 +17,13 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     });
   }
 
-  async validate(payload: TokenPayload) {
-    const { salt, ...user } = await this.usersRepository.getByEmail(
-      payload.email,
-    );
+  // async validate(payload: TokenPayload) {
+  //   const user = await this.usersRepository.getByEmail(payload.email);
 
-    if (!user) {
-      throw new UnauthorizedException('Token 만료됨');
-    }
+  //   if (!user) {
+  //     throw new UnauthorizedException('Token 만료됨');
+  //   }
 
-    return user;
-  }
+  //   return user;
+  // }
 }

@@ -3,13 +3,13 @@ import {
   Delete,
   Get,
   HttpCode,
+  HttpStatus,
   Put,
   UploadedFile,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { HTTP_STATUS_CODE } from 'src/common/configs/status.config';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import JwtAuthenticationGuard from 'src/common/guards/jwt-authentication.guard';
 import { ImagesService } from 'src/images/images.service';
@@ -27,7 +27,7 @@ export class UsersController {
 
   @UseGuards(JwtAuthenticationGuard)
   @UseInterceptors(FileInterceptor('image'))
-  @HttpCode(HTTP_STATUS_CODE.success.created)
+  @HttpCode(HttpStatus.CREATED)
   @Put()
   async updateUserPhoto(
     @UploadedFile() image: Express.Multer.File,
@@ -51,7 +51,7 @@ export class UsersController {
   }
 
   @UseGuards(JwtAuthenticationGuard)
-  @HttpCode(HTTP_STATUS_CODE.success.noContent)
+  @HttpCode(HttpStatus.NO_CONTENT)
   @Delete()
   async deleteUserPhoto(@CurrentUser() loginUser: User): Promise<void> {
     const userPhotoUrl: string = await this.userPhotoService.deleteUserPhoto(
